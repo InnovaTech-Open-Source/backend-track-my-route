@@ -47,13 +47,4 @@ public class TripController {
 
         return new ResponseEntity<>(tripResource, HttpStatus.CREATED);
     }
-
-    @DeleteMapping("/{tripId}")
-    public ResponseEntity<Void> deleteTrip(@PathVariable Long tripId) {
-        Boolean deleted = tripCommandService.delete(tripId);
-        if (deleted == null || !deleted) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
-        }
-        return ResponseEntity.ok().build();
-    }
 }

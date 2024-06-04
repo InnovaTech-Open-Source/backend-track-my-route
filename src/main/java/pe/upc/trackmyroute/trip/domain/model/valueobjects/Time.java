@@ -1,28 +1,19 @@
 package pe.upc.trackmyroute.trip.domain.model.valueobjects;
 
 import jakarta.persistence.Embeddable;
-import java.time.LocalTime;
+import jakarta.validation.constraints.NotBlank;
 
 @Embeddable
-public record Time(
-        LocalTime time
-) {
+public record Time(@NotBlank String value) {
     public Time() {
         this(null);
     }
 
     public Time {
-        if (time == null) {
-            throw new IllegalArgumentException("Time cannot be null");
+        if (value == null || value.isBlank()) {
+            throw new IllegalArgumentException("Time value cannot be null or blank");
         }
+        // Aquí podrías agregar validaciones adicionales para asegurarte de que el formato de la hora sea correcto, etc.
     }
 
-    public Time(String timeString) {
-        this(LocalTime.parse(timeString));
-    }
-
-    // Método para obtener el tiempo en un formato legible
-    public String getTime() {
-        return time.toString();
-    }
 }

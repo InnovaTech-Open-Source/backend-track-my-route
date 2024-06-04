@@ -1,12 +1,12 @@
 package pe.upc.trackmyroute.trip.domain.model.queries;
 
-public record GetTripByIdQuery(Long tripId) {
+public record GetTripByIdQuery(Long id){
     public GetTripByIdQuery {
-        if (tripId == null) {
-            throw new IllegalArgumentException("Trip ID cannot be null");
+        if (id == null) {
+            throw new IllegalArgumentException("id cannot be null");
         }
-        if (tripId < 0) {
-            throw new IllegalArgumentException("Trip ID cannot be negative");
+        if (id < 0) {
+            throw new IllegalArgumentException("id cannot be negative");
         }
     }
 }

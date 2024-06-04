@@ -1,15 +1,18 @@
 package pe.upc.trackmyroute.trip.domain.model.aggregates;
 
-import jakarta.persistence.*;
-import jakarta.validation.constraints.NotBlank;
+import jakarta.persistence.AttributeOverride;
+import jakarta.persistence.Column;
+import jakarta.persistence.Embedded;
+import jakarta.persistence.Entity;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import pe.upc.trackmyroute.shared.domain.model.aggregate.AuditableAbstractAggregateRoot;
 import pe.upc.trackmyroute.trip.domain.model.commands.CreateTripCommand;
-import pe.upc.trackmyroute.trip.domain.model.valueobjects.Location;
-import pe.upc.trackmyroute.trip.domain.model.valueobjects.Price;
+import pe.upc.trackmyroute.trip.domain.model.valueobjects.Destination;
+import pe.upc.trackmyroute.trip.domain.model.valueobjects.Fare;
+import pe.upc.trackmyroute.trip.domain.model.valueobjects.Origin;
 import pe.upc.trackmyroute.trip.domain.model.valueobjects.Time;
+import pe.upc.trackmyroute.shared.domain.model.aggregate.AuditableAbstractAggregateRoot;
 
 @Entity
 @Getter
@@ -18,41 +21,42 @@ import pe.upc.trackmyroute.trip.domain.model.valueobjects.Time;
 public class Trip extends AuditableAbstractAggregateRoot<Trip> {
 
     @Embedded
-    Location origin;
+    @AttributeOverride(name = "value", column = @Column(name = "origin_value"))
+    Origin origin;
 
     @Embedded
-    Location destination;
+    @AttributeOverride(name = "value", column = @Column(name = "destination_value"))
+    Destination destination;
 
     @Embedded
-    Price price;
+    @AttributeOverride(name = "value", column = @Column(name = "time_value"))
+    Time time;
 
     @Embedded
-    Time arrivalTime;
-
+    @AttributeOverride(name = "value", column = @Column(name = "fare_value"))
+    Fare fare;
 
     public Trip(CreateTripCommand command) {
-        this.price = new Price(command.price(), command.currency());
-        this.origin = new Location(command.originLatitude(), command.originLongitude());
-        this.destination = new Location(command.destinationLatitude(), command.destinationLongitude());
-        this.arrivalTime = new Time(command.time());
+        this.origin = new Origin(command.origin());
+        this.destination = new Destination(command.destination());
+        this.time = new Time(command.time());
+        this.fare = new Fare(command.fare());
     }
 
-    public String getOriginCoordinates() {
-        return origin.getCoordinates();
+    public String getOrigin(){
+        return origin.value();
     }
 
-    public String getDestinationCoordinates() {
-        return destination.getCoordinates();
+    public String getTime(){
+        return time.value();
     }
 
-    public String getPrice() {
-        return price.amount().toString();
+    public String getFare(){
+        return fare.value();
     }
 
-
-    public String getArrivalTime() {
-        return arrivalTime.getTime();
+    public String getDestination(){
+        return destination.value();
     }
-
 
 }

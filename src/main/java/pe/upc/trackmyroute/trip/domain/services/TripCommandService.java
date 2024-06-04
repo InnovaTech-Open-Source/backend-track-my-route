@@ -9,6 +9,4 @@ import java.util.Optional;
 @Service
 public interface TripCommandService {
     Optional<Trip> handle(CreateTripCommand command);
-    boolean delete(Long tripId);
-
 }

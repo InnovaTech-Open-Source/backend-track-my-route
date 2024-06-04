@@ -19,20 +19,10 @@ public class TripCommandServiceImpl implements TripCommandService {
 
     @Override
     public Optional<Trip> handle(CreateTripCommand command) {
+
         var trip = new Trip(command);
         tripRepository.save(trip);
+
         return Optional.of(trip);
-    }
-
-    @Override
-    public boolean delete(Long tripId) {
-
-        try {
-            tripRepository.deleteById(tripId);
-            return true;
-        } catch (Exception e) {
-
-            return false;
-        }
     }
 }
