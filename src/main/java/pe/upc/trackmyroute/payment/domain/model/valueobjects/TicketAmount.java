@@ -1,6 +1,8 @@
 package pe.upc.trackmyroute.payment.domain.model.valueobjects;
 
-public record TicketAmount(String exchange, String price) {
+import jakarta.validation.constraints.NotBlank;
+
+public record TicketAmount(@NotBlank String exchange, @NotBlank String price) {
     public TicketAmount(){this(null, null);}
     public TicketAmount{
         if(exchange == null || exchange.isBlank()){

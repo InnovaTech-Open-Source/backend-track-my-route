@@ -4,16 +4,17 @@ import jakarta.persistence.Embeddable;
 import jakarta.persistence.Embedded;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 import lombok.experimental.ExtensionMethod;
 import org.springframework.data.domain.AbstractAggregateRoot;
+import pe.upc.trackmyroute.payment.domain.model.commands.CreatePaymentCommand;
 import pe.upc.trackmyroute.payment.domain.model.valueobjects.*;
 import pe.upc.trackmyroute.shared.domain.model.aggregate.AuditableAbstractAggregateRoot;
 
 @Entity
 @Getter
+@Builder
+@AllArgsConstructor
 @NoArgsConstructor
 public class Payment extends AuditableAbstractAggregateRoot<Payment> {
 

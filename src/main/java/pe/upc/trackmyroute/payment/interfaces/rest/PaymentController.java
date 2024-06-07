@@ -1,15 +1,20 @@
 package pe.upc.trackmyroute.payment.interfaces.rest;
 
 
+import io.swagger.v3.oas.annotations.tags.Tag;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import pe.upc.trackmyroute.payment.domain.model.aggregates.Payment;
+import pe.upc.trackmyroute.payment.domain.model.commands.CreatePaymentCommand;
 import pe.upc.trackmyroute.payment.domain.model.queries.GetPaymentByIdQuery;
+import pe.upc.trackmyroute.payment.domain.services.PaymentCommandService;
 import pe.upc.trackmyroute.payment.domain.services.PaymentQueryService;
+import pe.upc.trackmyroute.payment.interfaces.rest.resources.CreatePaymentResource;
+import pe.upc.trackmyroute.payment.interfaces.rest.resources.PaymentResource;
+import pe.upc.trackmyroute.payment.interfaces.rest.transform.CreatePaymentCommandFromResourceAssembler;
+import pe.upc.trackmyroute.payment.interfaces.rest.transform.PaymentResourceFromEntityAssembler;
 
 /*
     PaymentController
@@ -20,19 +25,32 @@ import pe.upc.trackmyroute.payment.domain.services.PaymentQueryService;
 
 @RestController
 @RequestMapping(value = "/api/v1/payment")
+@Tag( name = "Payments", description = "Payments Management Endpoints")
 public class PaymentController {
 
     private final PaymentQueryService paymentQueryService;
+    private final PaymentCommandService paymentCommandService;
 
-    public PaymentController(PaymentQueryService paymentQueryService) {
+    public PaymentController(PaymentQueryService paymentQueryService, PaymentCommandService paymentCommandService) {
         this.paymentQueryService = paymentQueryService;
+        this.paymentCommandService = paymentCommandService;
     }
 
     @GetMapping("/{paymentId}")
-    public ResponseEntity<Payment> getPaymentById(@PathVariable Long paymentId) {
+    public ResponseEntity<PaymentResource> getPaymentById(@PathVariable Long paymentId) {
         var getPaymentByIdQuery = new GetPaymentByIdQuery(paymentId);
         var payment = paymentQueryService.handle(getPaymentByIdQuery);
         if (payment.isEmpty()) return ResponseEntity.notFound().build();
-        return ResponseEntity.ok(payment.get());
+        return ResponseEntity.ok(PaymentResourceFromEntityAssembler.transformResourceFromEntity(payment.get()));
+    }
+
+    @PostMapping
+    public ResponseEntity<PaymentResource> createPayment(@RequestBody CreatePaymentResource resource) {
+        var createPaymentCommand = CreatePaymentCommandFromResourceAssembler.toCommandFromResource(resource);
+        var payment = paymentCommandService.handle(createPaymentCommand);
+        if(payment.isEmpty()) return ResponseEntity.badRequest().build();
+
+        var paymentResource =  PaymentResourceFromEntityAssembler.transformResourceFromEntity(payment.get());
+        return new ResponseEntity<PaymentResource>(paymentResource, HttpStatus.CREATED);
     }
 }

@@ -9,5 +9,5 @@ import java.util.Optional;
 
 public interface PaymentRepository extends JpaRepository<Payment, Long> {
     Optional<Payment> findByTicket(TicketAmount ticket);
-    Optional<Payment> findByBusName(Bus busName);
+    Optional<Payment> findByBus_BusName(Bus busName);
 }

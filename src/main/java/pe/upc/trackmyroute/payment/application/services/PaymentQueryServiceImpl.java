@@ -1,5 +1,6 @@
 package pe.upc.trackmyroute.payment.application.services;
 
+import org.springframework.stereotype.Service;
 import pe.upc.trackmyroute.payment.domain.model.aggregates.Payment;
 import pe.upc.trackmyroute.payment.domain.model.queries.GetPaymentByBusNameQuery;
 import pe.upc.trackmyroute.payment.domain.model.queries.GetPaymentByIdQuery;
@@ -9,6 +10,7 @@ import pe.upc.trackmyroute.payment.infraestructure.persistence.jpa.repositories.
 
 import java.util.Optional;
 
+@Service
 public class PaymentQueryServiceImpl implements PaymentQueryService {
 
     private final PaymentRepository paymentRepository;
@@ -30,6 +32,6 @@ public class PaymentQueryServiceImpl implements PaymentQueryService {
 
     @Override
     public Optional<Payment> handle(GetPaymentByBusNameQuery query) {
-        return paymentRepository.findByBusName(query.busName());
+        return paymentRepository.findByBus_BusName(query.busName());
     }
 }

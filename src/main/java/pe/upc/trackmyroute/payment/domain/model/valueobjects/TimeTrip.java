@@ -1,6 +1,8 @@
 package pe.upc.trackmyroute.payment.domain.model.valueobjects;
 
-public record TimeTrip(String hour, String minutes, String dayTime) {
+import jakarta.validation.constraints.NotBlank;
+
+public record TimeTrip(@NotBlank String hour, @NotBlank String minutes, @NotBlank String dayTime) {
     public TimeTrip(){this(null, null, null);}
 
     public TimeTrip{
@@ -18,7 +20,7 @@ public record TimeTrip(String hour, String minutes, String dayTime) {
     }
 
     public String getTimeTrip(){
-        return String.format("%s:%s s%", hour, minutes, dayTime );
+        return String.format("%s%s%s", hour, minutes, dayTime );
     }
 
 }
