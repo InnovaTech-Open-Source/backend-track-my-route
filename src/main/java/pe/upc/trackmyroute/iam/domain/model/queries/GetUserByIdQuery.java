@@ -1,4 +1,4 @@
 package pe.upc.trackmyroute.iam.domain.model.queries;
 
-public class GetUserByIdQuery {
+public record GetUserByIdQuery(Long id) {
 }

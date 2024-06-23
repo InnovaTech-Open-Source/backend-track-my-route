@@ -1,4 +1,4 @@
 package pe.upc.trackmyroute.iam.domain.model.queries;
 
-public class GetAllUsersQuery {
+public record GetAllUsersQuery() {
 }

@@ -1,4 +1,4 @@
 package pe.upc.trackmyroute.iam.domain.model.commands;
 
-public record SignInCommand() {
+public record SignInCommand(String username, String password) {
 }

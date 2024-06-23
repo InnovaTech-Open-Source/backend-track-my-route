@@ -1,4 +1,8 @@
 package pe.upc.trackmyroute.iam.domain.model.commands;
 
-public record SignUpCommand() {
+import pe.upc.trackmyroute.iam.domain.model.entities.Role;
+
+import java.util.List;
+
+public record SignUpCommand(String username, String password, List<Role> roles) {
 }

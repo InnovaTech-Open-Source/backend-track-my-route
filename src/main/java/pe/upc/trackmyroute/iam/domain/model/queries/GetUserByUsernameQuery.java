@@ -1,4 +1,4 @@
 package pe.upc.trackmyroute.iam.domain.model.queries;
 
-public class GetUserByUsernameQuery {
+public record GetUserByUsernameQuery(String username) {
 }
