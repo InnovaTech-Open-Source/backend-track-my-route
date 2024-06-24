@@ -13,6 +13,9 @@ import pe.upc.trackmyroute.trip.interfaces.rest.resources.CreateTripResource;
 import pe.upc.trackmyroute.trip.interfaces.rest.resources.TripResource;
 import pe.upc.trackmyroute.trip.interfaces.rest.transform.CreateTripCommandFromResourceAssembler;
 import pe.upc.trackmyroute.trip.interfaces.rest.transform.TripResourceFromEntityAssembler;
+import pe.upc.trackmyroute.trip.domain.model.queries.GetAllTripsQuery;
+
+import java.util.List;
 
 @RestController
 @RequestMapping(value = "/api/v1/trips")
@@ -34,6 +37,14 @@ public class TripController {
         if (trip.isEmpty()) return ResponseEntity.notFound().build();
 
         return ResponseEntity.ok(TripResourceFromEntityAssembler.transformResourceFromEntity(trip.get()));
+    }
+
+    @GetMapping
+    public ResponseEntity<List<TripResource>> getAllResources(){
+        var getAllTripsQuery = new GetAllTripsQuery();
+        var trips = tripQueryService.handle(getAllTripsQuery);
+        var tripResources = trips.stream().map(TripResourceFromEntityAssembler::transformResourceFromEntity).toList();
+        return ResponseEntity.ok(tripResources);
     }
 
     @PostMapping
