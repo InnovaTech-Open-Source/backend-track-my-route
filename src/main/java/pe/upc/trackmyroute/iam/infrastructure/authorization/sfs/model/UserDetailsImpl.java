@@ -15,22 +15,19 @@ import java.util.Collection;
 public class UserDetailsImpl implements UserDetails {
 
     private final String username;
-
     @JsonIgnore
     private final String password;
-
-    private final Collection<? extends GrantedAuthority> authorities;
-
     private final boolean isAccountNonExpired;
     private final boolean isAccountNonLocked;
     private final boolean isCredentialsNonExpired;
     private final boolean isEnabled;
+    private final Collection<? extends GrantedAuthority> authorities;
 
-    public UserDetailsImpl(String username, String password, Collection<? extends GrantedAuthority> authorities) {
+    public UserDetailsImpl(String username, String password,
+                           Collection<? extends GrantedAuthority> authorities) {
         this.username = username;
         this.password = password;
         this.authorities = authorities;
-
         this.isAccountNonExpired = true;
         this.isAccountNonLocked = true;
         this.isCredentialsNonExpired = true;

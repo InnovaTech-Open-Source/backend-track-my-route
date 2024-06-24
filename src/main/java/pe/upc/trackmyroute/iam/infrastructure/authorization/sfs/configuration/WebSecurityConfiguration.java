@@ -1,71 +1,90 @@
 package pe.upc.trackmyroute.iam.infrastructure.authorization.sfs.configuration;
 
+import pe.upc.trackmyroute.iam.infrastructure.authorization.sfs.pipeline.BearerAuthorizationRequestFilter;
+import pe.upc.trackmyroute.iam.infrastructure.tokens.jwt.BearerTokenService;
+import pe.upc.trackmyroute.iam.infrastructure.hashing.bcrypt.BCryptHashingService;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
+import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsConfiguration;
-import pe.upc.trackmyroute.iam.infrastructure.authorization.sfs.pipeline.BearerAuthorizationRequestFilter;
-import pe.upc.trackmyroute.iam.infrastructure.tokens.jwt.BearerTokenService;
 
 import java.util.List;
 
 @Configuration
 @EnableMethodSecurity
 public class WebSecurityConfiguration {
-
-    private final BearerTokenService tokenService;
-
-    @Qualifier("defaultUserDetailsService")
     private final UserDetailsService userDetailsService;
+    private final BearerTokenService tokenService;
+    private final BCryptHashingService hashingService;
+    private final AuthenticationEntryPoint unauthorizedRequestHandler;
 
-    public WebSecurityConfiguration(BearerTokenService tokenService, UserDetailsService userDetailsService) {
-        this.tokenService = tokenService;
+    public WebSecurityConfiguration(@Qualifier("defaultUserDetailsService") UserDetailsService userDetailsService, BearerTokenService tokenService, BCryptHashingService hashingService, AuthenticationEntryPoint unauthorizedRequestHandler) {
         this.userDetailsService = userDetailsService;
+        this.tokenService = tokenService;
+        this.hashingService = hashingService;
+        this.unauthorizedRequestHandler = unauthorizedRequestHandler;
     }
 
+    @Bean
+    public AuthenticationManager authenticationManager(AuthenticationConfiguration authenticationConfiguration)
+            throws Exception {
+        return authenticationConfiguration.getAuthenticationManager();
+    }
+
+    @Bean
+    public DaoAuthenticationProvider authenticationProvider() {
+        var authenticationProvider = new DaoAuthenticationProvider();
+        authenticationProvider.setUserDetailsService(userDetailsService);
+        authenticationProvider.setPasswordEncoder(hashingService);
+        return authenticationProvider;
+    }
+
+    @Bean
+    public PasswordEncoder passwordEncoder() {
+        return hashingService;
+    }
+
+    @Bean
+    public BearerAuthorizationRequestFilter authorizationRequestFilter() {
+        return new BearerAuthorizationRequestFilter(tokenService, userDetailsService);
+    }
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-
-        http.cors(configurer -> configurer.configurationSource(a -> {
+        // CORS default configuration
+        http.cors(configurer -> configurer.configurationSource( a -> {
             var cors = new CorsConfiguration();
             cors.setAllowedOrigins(List.of("*"));
-            cors.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "PATCH"));
+            cors.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE"));
             cors.setAllowedHeaders(List.of("*"));
-
             return cors;
         }));
-
-        http.csrf(csrf -> csrf.disable());
-
-        http.sessionManagement(customizer-> customizer.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
-
-        http.authorizeHttpRequests(authorizeRequest -> authorizeRequest
-                .requestMatchers(
-                        "/**",
-                        "/v3/api-docs/**",
-                        "/swagger-ui.html",
-                        "/swagger-ui/**",
-                        "/swagger-resources/**",
-                        "/webjars/**")
-                .permitAll()
-                .anyRequest()
-                .authenticated()
-        );
-
-        http.addFilterBefore(bearerAuthorizationRequestFilter(), UsernamePasswordAuthenticationFilter.class);
-
+        http.csrf(csrfConfigurer -> csrfConfigurer.disable())
+                .exceptionHandling(exceptionHandling -> exceptionHandling.authenticationEntryPoint(unauthorizedRequestHandler))
+                .sessionManagement(customizer -> customizer.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .authorizeHttpRequests(authorizeRequests -> authorizeRequests
+                        .requestMatchers(
+                                "/api/v1/authentication/**",
+                                "/v3/api-docs/**",
+                                "/swagger-ui.html",
+                                "/swagger-ui/**",
+                                "/swagger-resources/**",
+                                "/webjars/**"
+                        ).permitAll()
+                        .anyRequest().authenticated());
+        http.authenticationProvider(authenticationProvider());
+        http.addFilterBefore(authorizationRequestFilter(), UsernamePasswordAuthenticationFilter.class);
         return http.build();
-    }
-
-    @Bean
-    public BearerAuthorizationRequestFilter bearerAuthorizationRequestFilter() {
-        return new BearerAuthorizationRequestFilter(tokenService, userDetailsService);
     }
 
 }

@@ -13,13 +13,10 @@ public class HashingServiceImpl implements BCryptHashingService {
     }
 
     @Override
-    public boolean matches(CharSequence rawPassword, String encodedPassword) {
-        return this.passwordEncoder.matches(rawPassword, encodedPassword);
-    }
+    public String encode(CharSequence rawPassword) { return passwordEncoder.encode(rawPassword); }
 
     @Override
-    public String encode(CharSequence rawPassword) {
-
-        return this.passwordEncoder.encode(rawPassword);
+    public boolean matches(CharSequence rawPassword, String encodedPassword) {
+        return passwordEncoder.matches(rawPassword, encodedPassword);
     }
 }

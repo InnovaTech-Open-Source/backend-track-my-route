@@ -1,5 +1,6 @@
 package pe.upc.trackmyroute.iam.infrastructure.authorization.sfs.pipeline;
 
+import io.micrometer.common.lang.NonNull;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -17,8 +18,7 @@ import java.io.IOException;
 
 public class BearerAuthorizationRequestFilter extends OncePerRequestFilter {
 
-    private final Logger LOGGER = LoggerFactory.getLogger(BearerAuthorizationRequestFilter.class);
-
+    private static final Logger LOGGER = LoggerFactory.getLogger(BearerAuthorizationRequestFilter.class);
     private final BearerTokenService tokenService;
 
     @Qualifier("defaultUserDetailsService")
@@ -30,19 +30,23 @@ public class BearerAuthorizationRequestFilter extends OncePerRequestFilter {
     }
 
     @Override
-    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
+    protected void doFilterInternal(
+            @NonNull HttpServletRequest request,
+            @NonNull HttpServletResponse response,
+            @NonNull FilterChain filterChain) throws ServletException, IOException {
         try{
             String token = tokenService.getBearerTokenFrom(request);
-            LOGGER.debug("Bearer token: {}", token);
+            LOGGER.info("Bearer token: {}", token);
             if (token != null && tokenService.validateToken(token)) {
                 String username = tokenService.getUsernameFromToken(token);
                 var userDetails = userDetailsService.loadUserByUsername(username);
-
-                SecurityContextHolder.getContext().setAuthentication(UsernamePasswordAuthenticationTokenBuilder.build(userDetails, request));
-            }else {
+                SecurityContextHolder.getContext()
+                        .setAuthentication(UsernamePasswordAuthenticationTokenBuilder
+                                .build(userDetails, request));
+            } else {
                 LOGGER.info("Token is not valid");
             }
-        }catch (Exception e){
+        } catch (Exception e){
             LOGGER.error("Cannot set user authentication: {}",e.getMessage());
         }
         filterChain.doFilter(request, response);

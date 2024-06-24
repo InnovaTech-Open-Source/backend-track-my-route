@@ -7,7 +7,7 @@ import org.springframework.stereotype.Service;
 import pe.upc.trackmyroute.iam.infrastructure.authorization.sfs.model.UserDetailsImpl;
 import pe.upc.trackmyroute.iam.infrastructure.persistence.jpa.repositories.UserRepository;
 
-@Service(value = "defaultUserDetailsService")
+@Service("defaultUserDetailsService")
 public class UserDetailsServiceImpl implements UserDetailsService {
 
     private final UserRepository userRepository;

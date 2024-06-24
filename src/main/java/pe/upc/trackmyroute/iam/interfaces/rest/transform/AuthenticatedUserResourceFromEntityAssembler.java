@@ -5,8 +5,8 @@ import pe.upc.trackmyroute.iam.interfaces.rest.resources.AuthenticatedUserResour
 
 public class AuthenticatedUserResourceFromEntityAssembler {
 
-    public static AuthenticatedUserResource toResourceFromEntity(User entity, String token){
-        return new AuthenticatedUserResource(entity.getUsername(), token);
+    public static AuthenticatedUserResource toResourceFromEntity(User user, String token){
+        return new AuthenticatedUserResource(user.getId(), user.getUsername(), token);
     }
 }
 

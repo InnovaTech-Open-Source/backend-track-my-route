@@ -19,6 +19,7 @@ import java.util.Set;
 public class User extends AuditableAbstractAggregateRoot<User> {
     @NotBlank
     @Size(min = 3, max = 50)
+    @Column(unique = true)
     private String username;
 
     @NotBlank

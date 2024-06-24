@@ -13,10 +13,9 @@ import java.util.Optional;
 
 @Service
 public class UserQueryServiceImpl implements UserQueryService {
-
     private final UserRepository userRepository;
 
-    public UserQueryServiceImpl(final UserRepository userRepository) {
+    public UserQueryServiceImpl(UserRepository userRepository) {
         this.userRepository = userRepository;
     }
 
@@ -27,7 +26,7 @@ public class UserQueryServiceImpl implements UserQueryService {
 
     @Override
     public Optional<User> handle(GetUserByIdQuery query) {
-        return userRepository.findById(query.id());
+        return userRepository.findById(query.userId());
     }
 
     @Override

@@ -28,6 +28,11 @@ public class AuthenticationController {
         this.userCommandService = userCommandService;
     }
 
+    /**
+     * Handles the sign-in request.
+     * @param signInResource the sign-in request body.
+     * @return the authenticated user resource.
+     */
     @PostMapping("/sign-in")
     public ResponseEntity<AuthenticatedUserResource> signIn(@RequestBody SignInResource signInResource) {
         var signInCommand = SignInCommandFromResourceAssembler.toCommandFromResource(signInResource);
@@ -41,6 +46,11 @@ public class AuthenticationController {
         return ResponseEntity.ok(authenticatedUserResource);
     }
 
+    /**
+     * Handles the sign-up request.
+     * @param signUpResource the sign-up request body.
+     * @return the created user resource.
+     */
     @PostMapping("/sign-up")
     public ResponseEntity<UserResource> signUp(@RequestBody SignUpResource signUpResource) {
         var signUpCommand = SignUpCommandFromResourceAssembler.toCommandFromResource(signUpResource);

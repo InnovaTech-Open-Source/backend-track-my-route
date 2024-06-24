@@ -7,10 +7,13 @@ import pe.upc.trackmyroute.iam.application.internal.outboundservices.tokens.Toke
 import pe.upc.trackmyroute.iam.domain.model.aggregates.User;
 import pe.upc.trackmyroute.iam.domain.model.commands.SignInCommand;
 import pe.upc.trackmyroute.iam.domain.model.commands.SignUpCommand;
+import pe.upc.trackmyroute.iam.domain.model.entities.Role;
+import pe.upc.trackmyroute.iam.domain.model.valueobjects.Roles;
 import pe.upc.trackmyroute.iam.domain.services.UserCommandService;
 import pe.upc.trackmyroute.iam.infrastructure.persistence.jpa.repositories.RoleRepository;
 import pe.upc.trackmyroute.iam.infrastructure.persistence.jpa.repositories.UserRepository;
 
+import java.util.ArrayList;
 import java.util.Optional;
 
 @Service
@@ -21,7 +24,7 @@ public class UserCommandServiceImpl implements UserCommandService {
     private final HashingService hashingService;
     private final TokenService tokenService;
 
-    public UserCommandServiceImpl(final UserRepository userRepository, RoleRepository roleRepository, HashingService hashingService, TokenService tokenService) {
+    public UserCommandServiceImpl(UserRepository userRepository, RoleRepository roleRepository, HashingService hashingService, TokenService tokenService) {
         this.userRepository = userRepository;
         this.roleRepository = roleRepository;
         this.hashingService = hashingService;
@@ -30,14 +33,21 @@ public class UserCommandServiceImpl implements UserCommandService {
 
     @Override
     public Optional<User> handle(SignUpCommand command) {
-        if(userRepository.existsByUsername(command.username())){
+        if (userRepository.existsByUsername(command.username()))
             throw new RuntimeException("Username already exists");
+        var stringRoles = command.roles();
+        var roles = new ArrayList<Role>();
+        if (stringRoles == null || stringRoles.isEmpty()) {
+            var storedRole = roleRepository.findByName(Roles.ROLE_USER);
+            storedRole.ifPresent(roles::add);
+        } else {
+            stringRoles.forEach(role -> {
+                var storedRole = roleRepository.findByName(Roles.valueOf(role));
+                storedRole.ifPresent(roles::add);
+            });
         }
-
-        var roles = command.roles().stream().map(role -> roleRepository.findByName(role.getName()).orElseThrow(()-> new RuntimeException("Role name not found."))).toList();
         var user = new User(command.username(), hashingService.encode(command.password()), roles);
         userRepository.save(user);
-
         return userRepository.findByUsername(command.username());
     }
 
