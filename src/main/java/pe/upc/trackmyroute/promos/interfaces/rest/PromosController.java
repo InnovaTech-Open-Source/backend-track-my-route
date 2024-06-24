@@ -25,9 +25,6 @@ public class PromosController {
     @GetMapping
     public ResponseEntity<List<Promo>> getAllPromos() {
         var promos = promoQueryService.handle(new GetPromosQuery());
-        if (promos.isEmpty()) {
-            return ResponseEntity.badRequest().build();
-        }
         return ResponseEntity.ok(promos);
     }
 }
