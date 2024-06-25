@@ -2,7 +2,7 @@ version: '3.8'
 
 services:
   app:
-    image: 'docker-springboot-pg-upc:latest'
+    image: 'docker-springboot-pg-trackmyroute:latest'
     build:
       context: .
     container_name: app
@@ -11,7 +11,7 @@ services:
     environment:
       - POSTGRES_USER=root
       - POSTGRES_PASSWORD=root
-      - SPRING_DATASOURCE_URL=jdbc:postgresql://db:5432/upc
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://db:5432/trackmyroute
       - SPRING_DATASOURCE_USERNAME=root
       - SPRING_DATASOURCE_PASSWORD=root
     ports:
@@ -22,6 +22,6 @@ services:
     environment:
       - POSTGRES_USER=root
       - POSTGRES_PASSWORD=root
-      - POSTGRES_DB=upc
+      - POSTGRES_DB=trackmyroute
     ports:
       - "5432:5432"
