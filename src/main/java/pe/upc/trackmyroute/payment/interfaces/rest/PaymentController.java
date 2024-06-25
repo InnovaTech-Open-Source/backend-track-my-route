@@ -8,6 +8,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import pe.upc.trackmyroute.payment.domain.model.aggregates.Payment;
 import pe.upc.trackmyroute.payment.domain.model.commands.CreatePaymentCommand;
+import pe.upc.trackmyroute.payment.domain.model.queries.GetAllPaymentsQuery;
 import pe.upc.trackmyroute.payment.domain.model.queries.GetPaymentByIdQuery;
 import pe.upc.trackmyroute.payment.domain.services.PaymentCommandService;
 import pe.upc.trackmyroute.payment.domain.services.PaymentQueryService;
@@ -15,6 +16,10 @@ import pe.upc.trackmyroute.payment.interfaces.rest.resources.CreatePaymentResour
 import pe.upc.trackmyroute.payment.interfaces.rest.resources.PaymentResource;
 import pe.upc.trackmyroute.payment.interfaces.rest.transform.CreatePaymentCommandFromResourceAssembler;
 import pe.upc.trackmyroute.payment.interfaces.rest.transform.PaymentResourceFromEntityAssembler;
+import pe.upc.trackmyroute.promos.domain.model.entities.Promo;
+import pe.upc.trackmyroute.promos.domain.model.queries.GetPromosQuery;
+
+import java.util.List;
 
 /*
     PaymentController
@@ -34,6 +39,15 @@ public class PaymentController {
     public PaymentController(PaymentQueryService paymentQueryService, PaymentCommandService paymentCommandService) {
         this.paymentQueryService = paymentQueryService;
         this.paymentCommandService = paymentCommandService;
+    }
+
+    @GetMapping
+    public ResponseEntity<List<Payment>> getAllPayments() {
+        var payment = paymentQueryService.handle(new GetAllPaymentsQuery());
+        if (payment.isEmpty()) {
+            return ResponseEntity.badRequest().build();
+        }
+        return ResponseEntity.ok(payment);
     }
 
     @GetMapping("/{paymentId}")
