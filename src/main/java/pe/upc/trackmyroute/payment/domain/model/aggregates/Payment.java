@@ -1,13 +1,11 @@
 package pe.upc.trackmyroute.payment.domain.model.aggregates;
 
-import jakarta.persistence.Embeddable;
 import jakarta.persistence.Embedded;
 import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import lombok.*;
-import lombok.experimental.ExtensionMethod;
-import org.springframework.data.domain.AbstractAggregateRoot;
-import pe.upc.trackmyroute.payment.domain.model.commands.CreatePaymentCommand;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 import pe.upc.trackmyroute.payment.domain.model.valueobjects.*;
 import pe.upc.trackmyroute.shared.domain.model.aggregate.AuditableAbstractAggregateRoot;
 

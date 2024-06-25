@@ -3,12 +3,8 @@ package pe.upc.trackmyroute.payment.application.services;
 import org.springframework.stereotype.Service;
 import pe.upc.trackmyroute.payment.domain.model.aggregates.Payment;
 import pe.upc.trackmyroute.payment.domain.model.commands.CreatePaymentCommand;
-import pe.upc.trackmyroute.payment.domain.model.queries.GetPaymentByBusNameQuery;
-import pe.upc.trackmyroute.payment.domain.model.queries.GetPaymentByIdQuery;
-import pe.upc.trackmyroute.payment.domain.model.queries.GetPaymentByTicketAmountQuery;
 import pe.upc.trackmyroute.payment.domain.model.valueobjects.*;
 import pe.upc.trackmyroute.payment.domain.services.PaymentCommandService;
-import pe.upc.trackmyroute.payment.domain.services.PaymentQueryService;
 import pe.upc.trackmyroute.payment.infraestructure.persistence.jpa.repositories.PaymentRepository;
 
 import java.util.Optional;
@@ -24,7 +20,7 @@ public class PaymentCommandServiceImpl implements PaymentCommandService {
     @Override
     public Optional<Payment> handle(CreatePaymentCommand command) {
 
-        var busName = new Bus(command.busName());
+        var busName = command.busName();
 
         paymentRepository.findByBus_BusName(busName).map(payment -> {
             throw new IllegalArgumentException("Bus " + busName + " already exists");

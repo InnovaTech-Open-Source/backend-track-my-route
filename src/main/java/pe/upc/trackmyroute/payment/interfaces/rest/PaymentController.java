@@ -2,10 +2,10 @@ package pe.upc.trackmyroute.payment.interfaces.rest;
 
 
 import io.swagger.v3.oas.annotations.tags.Tag;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import pe.upc.trackmyroute.payment.domain.model.aggregates.Payment;
 import pe.upc.trackmyroute.payment.domain.model.queries.GetAllPaymentsQuery;
 import pe.upc.trackmyroute.payment.domain.model.queries.GetPaymentByIdQuery;
 import pe.upc.trackmyroute.payment.domain.services.PaymentCommandService;
@@ -14,7 +14,6 @@ import pe.upc.trackmyroute.payment.interfaces.rest.resources.CreatePaymentResour
 import pe.upc.trackmyroute.payment.interfaces.rest.resources.PaymentResource;
 import pe.upc.trackmyroute.payment.interfaces.rest.transform.CreatePaymentCommandFromResourceAssembler;
 import pe.upc.trackmyroute.payment.interfaces.rest.transform.PaymentResourceFromEntityAssembler;
-import pe.upc.trackmyroute.trip.domain.services.TripQueryService;
 
 import java.util.List;
 
@@ -39,11 +38,12 @@ public class PaymentController {
     }
 
     @GetMapping
-    public ResponseEntity<List<PaymentResource>> getAllPayment(){
-        var getAllPaymentsQuery = new GetAllPaymentsQuery();
-        var payments = paymentQueryService.handle(getAllPaymentsQuery);
-        var paymentResource = payments.stream().map(PaymentResourceFromEntityAssembler::transformResourceFromEntity).toList();
-        return ResponseEntity.ok(paymentResource);
+    public ResponseEntity<List<Payment>> getAllPayments() {
+        var payment = paymentQueryService.handle(new GetAllPaymentsQuery());
+        if (payment.isEmpty()) {
+            return ResponseEntity.badRequest().build();
+        }
+        return ResponseEntity.ok(payment);
     }
 
     @GetMapping("/{paymentId}")

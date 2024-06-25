@@ -1,7 +1,5 @@
 package pe.upc.trackmyroute.payment.domain.model.commands;
 
-import jakarta.validation.constraints.NotBlank;
-
 public record CreatePaymentCommand(
         String busName,
         String originStop,
