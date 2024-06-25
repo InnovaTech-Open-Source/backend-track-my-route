@@ -32,7 +32,6 @@ public class TripController {
         var getTripByIdQuery = new GetTripByIdQuery(tripId);
         var trip = tripQueryService.handle(getTripByIdQuery);
         if (trip.isEmpty()) return ResponseEntity.notFound().build();
-
         return ResponseEntity.ok(TripResourceFromEntityAssembler.transformResourceFromEntity(trip.get()));
     }
 
