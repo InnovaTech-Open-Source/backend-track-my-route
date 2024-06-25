@@ -5,4 +5,9 @@ import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest
 class TrackMyRouteApplicationTests {
+
+	@Test
+	void contextLoads() {
+	}
+
 }
