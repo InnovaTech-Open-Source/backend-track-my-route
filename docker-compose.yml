@@ -1,6 +1,19 @@
 version: '3.8'
 
 services:
+  nginx-ssl-proxy:
+    image: danieldent/nginx-ssl-proxy
+    restart: always
+    environment:
+      UPSTREAM: app:8080
+      SERVERNAME: app:8080
+      EXTRANAMES: app:8080,test2.example.com
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - "/etc/letsencrypt"
+
   app:
     image: 'docker-springboot-pg-trackmyroute:latest'
     build:
@@ -8,6 +21,7 @@ services:
     container_name: app
     depends_on:
       - db
+      - nginx-ssl-proxy
     environment:
       - POSTGRES_USER=root
       - POSTGRES_PASSWORD=root
@@ -26,14 +40,3 @@ services:
     ports:
       - "5432:5432"
 
-  nginx-ssl-proxy:
-    image: danieldent/nginx-ssl-proxy
-    restart: always
-    environment:
-      UPSTREAM: 127.0.0.1:8080
-      SERVERNAME: test.example.com
-      EXTRANAMES: test.example.com,test2.example.com
-    ports:
-      - "443:443"
-    volumes:
-      - "/etc/letsencrypt"
