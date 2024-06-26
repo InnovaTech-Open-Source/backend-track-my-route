@@ -25,3 +25,27 @@ services:
       - POSTGRES_DB=trackmyroute
     ports:
       - "5432:5432"
+
+  nginx-ssl-proxy:
+
+    image: danieldent/nginx-ssl-proxy
+
+    restart: always
+
+    environment:
+
+      UPSTREAM: 127.0.0.1:8080
+
+      SERVERNAME: test.example.com
+
+      EXTRANAMES: test.example.com,test2.example.com
+
+    ports:
+
+      - "80:80"
+
+      - "443:443"
+
+    volumes:
+
+      - "/etc/letsencrypt"

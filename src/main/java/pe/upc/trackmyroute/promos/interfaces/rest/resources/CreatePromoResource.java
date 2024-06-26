@@ -1,4 +1,11 @@
 package pe.upc.trackmyroute.promos.interfaces.rest.resources;
 
-public record CreatePromoResource() {
+import java.util.Date;
+
+public record CreatePromoResource(
+        String name,
+        String description,
+        String imageUrl,
+        Date validUntil
+) {
 }
